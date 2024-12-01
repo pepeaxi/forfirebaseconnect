@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "326370310717",
+    "project_id": "qarzdaftarcha",
+    "storage_bucket": "qarzdaftarcha.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:326370310717:android:b783c811410fb69a15c854",
+        "android_client_info": {
+          "package_name": "com.example.forfirebaseconnect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPU7DmlzXrTxtZX2ntk00JEWBJngyy73s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:326370310717:android:91c4bb360893b17615c854",
+        "android_client_info": {
+          "package_name": "com.exapmle.forfirebaseconnect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPU7DmlzXrTxtZX2ntk00JEWBJngyy73s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
