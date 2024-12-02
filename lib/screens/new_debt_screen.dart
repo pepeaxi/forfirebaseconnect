@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 import '../utils/number_formatter.dart';
+import 'login_screen.dart'; // Import for currentUsername
 
 class NewDebtScreen extends StatefulWidget {
   final bool isOwed;
@@ -326,8 +327,13 @@ class _NewDebtScreenState extends State<NewDebtScreen> {
       };
 
       // Save to Firestore
+      final collectionPath = _isDebtGiven ? 'lend' : 'borrowing';
       await FirebaseFirestore.instance
           .collection('debts')
+          .doc(currentUsername)
+          .collection(collectionPath)
+          .doc('debts')
+          .collection('items')
           .doc(debtData['id'])
           .set(debtData);
 
