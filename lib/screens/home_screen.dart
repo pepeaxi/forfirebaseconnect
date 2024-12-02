@@ -4,7 +4,6 @@ import '../models/debt_transaction.dart';
 import 'near_expired_debts_screen.dart';
 import 'account_screen.dart';
 import 'debt_details_screen.dart';
-import 'filtered_debts_screen.dart';
 import 'debt_contacts_screen.dart';
 
 class HomeScreen extends StatefulWidget {

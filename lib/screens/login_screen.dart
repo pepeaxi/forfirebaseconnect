@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,42 +16,37 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
-
       try {
-        // Check username and password in Firestore
+        // Get user document from Firestore
         final userDoc = await FirebaseFirestore.instance
             .collection('users')
             .doc(_usernameController.text)
             .get();
 
         if (!userDoc.exists) {
-          _showError('Username not found');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('User not found')),
+          );
           return;
         }
 
         final userData = userDoc.data()!;
-        if (userData['password'] != _passwordController.text) {
-          _showError('Invalid password');
-          return;
-        }
-
-        // Navigate to home screen
-        if (mounted) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
+        if (userData['password'] == _passwordController.text) {
+          // Check user type and navigate accordingly
+          if (userData['type'] == 'admin') {
+            Navigator.pushReplacementNamed(context, '/admin');
+          } else {
+            Navigator.pushReplacementNamed(context, '/home');
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Invalid password')),
           );
         }
       } catch (e) {
-        _showError('Login failed. Please try again.');
-      } finally {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
       }
     }
   }
