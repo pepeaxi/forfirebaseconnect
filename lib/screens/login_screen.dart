@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+// Global o'zgaruvchi
+String? currentUsername;
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -32,6 +35,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
         final userData = userDoc.data()!;
         if (userData['password'] == _passwordController.text) {
+          // Save username globally
+          currentUsername = _usernameController.text;
+          
           // Check user type and navigate accordingly
           if (userData['type'] == 'admin') {
             Navigator.pushReplacementNamed(context, '/admin');

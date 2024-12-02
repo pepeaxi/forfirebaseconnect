@@ -12,34 +12,102 @@ class NearExpiredDebtsScreen extends StatelessWidget {
         .collection('debts')
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs
-          .map((doc) {
-            final data = doc.data();
-            data['id'] = doc.id; // Add document ID to the data
-            try {
-              final transaction = DebtTransaction.fromMap(data);
-              final daysUntilDue = transaction.returnDate.difference(now).inDays;
-              
-              // Only show debts that haven't been fully paid
-              if (transaction.amount <= 0) {
-                return null;
-              }
+      final List<DebtTransaction> transactions = [];
 
-              if (isExpired) {
-                // Show debts that are already expired
-                return daysUntilDue < 0 ? transaction : null;
-              } else {
-                // Show debts that are due within next 3 days
-                return daysUntilDue >= 0 && daysUntilDue <= 3 ? transaction : null;
+      for (var doc in snapshot.docs) {
+        try {
+          // Get the document data
+          final userData = doc.data();
+
+          // Process borrowing debts
+          final borrowingData = (userData['borrowing']
+              as Map<String, dynamic>?)?['debts'] as Map<String, dynamic>?;
+          if (borrowingData != null) {
+            borrowingData.forEach((debtId, debtData) {
+              if (debtData is Map<String, dynamic>) {
+                try {
+                  final transaction = DebtTransaction(
+                    id: debtId,
+                    personName: debtData['personName'] as String? ?? '',
+                    phoneNumber: debtData['phoneNumber'] as String? ?? '',
+                    amount: (debtData['amount'] as num?)?.toDouble() ?? 0.0,
+                    isDebtGiven: false,
+                    date: DateTime.parse(debtData['date'] as String? ??
+                        DateTime.now().toIso8601String()),
+                    returnDate: DateTime.parse(
+                        debtData['returnDate'] as String? ??
+                            DateTime.now().toIso8601String()),
+                    description: debtData['description'] as String?,
+                    imageUrl: debtData['imageUrl'] as String?,
+                  );
+
+                  final daysUntilDue =
+                      transaction.returnDate.difference(now).inDays;
+
+                  if (transaction.amount > 0) {
+                    if (isExpired && daysUntilDue < 0) {
+                      transactions.add(transaction);
+                    } else if (!isExpired &&
+                        daysUntilDue >= 0 &&
+                        daysUntilDue <= 3) {
+                      transactions.add(transaction);
+                    }
+                  }
+                } catch (e) {
+                  debugPrint('Error parsing borrowing debt: $e');
+                }
               }
-            } catch (e) {
-              debugPrint('Error parsing debt: $e');
-              return null;
-            }
-          })
-          .where((transaction) => transaction != null)
-          .cast<DebtTransaction>() // Cast the non-null values
-          .toList();
+            });
+          }
+
+          // Process lending debts
+          final lendingData = (userData['lend']
+              as Map<String, dynamic>?)?['debts'] as Map<String, dynamic>?;
+          if (lendingData != null) {
+            lendingData.forEach((debtId, debtData) {
+              if (debtData is Map<String, dynamic>) {
+                try {
+                  final transaction = DebtTransaction(
+                    id: debtId,
+                    personName: debtData['personName'] as String? ?? '',
+                    phoneNumber: debtData['phoneNumber'] as String? ?? '',
+                    amount: (debtData['amount'] as num?)?.toDouble() ?? 0.0,
+                    isDebtGiven: true,
+                    date: DateTime.parse(debtData['date'] as String? ??
+                        DateTime.now().toIso8601String()),
+                    returnDate: DateTime.parse(
+                        debtData['returnDate'] as String? ??
+                            DateTime.now().toIso8601String()),
+                    description: debtData['description'] as String?,
+                    imageUrl: debtData['imageUrl'] as String?,
+                  );
+
+                  final daysUntilDue =
+                      transaction.returnDate.difference(now).inDays;
+
+                  if (transaction.amount > 0) {
+                    if (isExpired && daysUntilDue < 0) {
+                      transactions.add(transaction);
+                    } else if (!isExpired &&
+                        daysUntilDue >= 0 &&
+                        daysUntilDue <= 3) {
+                      transactions.add(transaction);
+                    }
+                  }
+                } catch (e) {
+                  debugPrint('Error parsing lending debt: $e');
+                }
+              }
+            });
+          }
+        } catch (e) {
+          debugPrint('Error processing document ${doc.id}: $e');
+        }
+      }
+
+      // Sort transactions by return date
+      transactions.sort((a, b) => a.returnDate.compareTo(b.returnDate));
+      return transactions;
     });
   }
 
@@ -120,8 +188,8 @@ class NearExpiredDebtsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  isExpired 
-                      ? 'O\'tgan muddatli qarzlar yo\'q' 
+                  isExpired
+                      ? 'O\'tgan muddatli qarzlar yo\'q'
                       : 'Yaqin muddatli qarzlar yo\'q',
                   style: TextStyle(
                     fontSize: 16,
@@ -138,8 +206,9 @@ class NearExpiredDebtsScreen extends StatelessWidget {
           itemCount: debts.length,
           itemBuilder: (context, index) {
             final debt = debts[index];
-            final daysUntilDue = debt.returnDate.difference(DateTime.now()).inDays;
-            
+            final daysUntilDue =
+                debt.returnDate.difference(DateTime.now()).inDays;
+
             return InkWell(
               onTap: () {
                 Navigator.push(
@@ -192,8 +261,8 @@ class NearExpiredDebtsScreen extends StatelessWidget {
                                 Row(
                                   children: [
                                     Icon(
-                                      isExpired 
-                                          ? Icons.warning 
+                                      isExpired
+                                          ? Icons.warning
                                           : Icons.access_time,
                                       size: 16,
                                       color: color,
@@ -219,7 +288,9 @@ class NearExpiredDebtsScreen extends StatelessWidget {
                               Text(
                                 '${debt.amount.toStringAsFixed(0)} so\'m',
                                 style: TextStyle(
-                                  color: debt.isDebtGiven ? Colors.green : Colors.red,
+                                  color: debt.isDebtGiven
+                                      ? Colors.green
+                                      : Colors.red,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),

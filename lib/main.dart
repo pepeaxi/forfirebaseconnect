@@ -4,6 +4,7 @@ import 'firebase_options.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/admin_screen.dart';
+import 'screens/account_screen.dart';
 import 'utils/setup_admin.dart';
 
 void main() async {
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),
         '/admin': (context) => const AdminScreen(),
+        '/profile': (context) => const ProfileScreen(),
       },
     );
   }

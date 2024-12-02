@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -226,8 +228,8 @@ class _NewDebtScreenState extends State<NewDebtScreen> {
                       return DataRow(
                         cells: [
                           DataCell(Text(item.name)),
-                          DataCell(
-                              Text('${NumberFormatter.formatNumber(item.price)} so\'m')),
+                          DataCell(Text(
+                              '${NumberFormatter.formatNumber(item.price)} so\'m')),
                           DataCell(
                             IconButton(
                               icon: const Icon(Icons.delete, color: Colors.red),

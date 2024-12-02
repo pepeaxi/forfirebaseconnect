@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
           HomePage(),
           NearExpiredDebtsScreen(),
           DebtContactsScreen(),
-          AccountScreen(),
+          ProfileScreen(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
