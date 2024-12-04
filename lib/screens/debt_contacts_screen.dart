@@ -94,15 +94,18 @@ class DebtContactsScreen extends StatelessWidget {
                 ].whereType<DebtTransaction>().toList();
 
                 // Remove duplicates based on personName
-                final uniqueDebts = allDebts.fold<Map<String, DebtTransaction>>(
-                  {},
-                  (map, debt) {
-                    if (!map.containsKey(debt.personName)) {
-                      map[debt.personName] = debt;
-                    }
-                    return map;
-                  },
-                ).values.toList();
+                final uniqueDebts = allDebts
+                    .fold<Map<String, DebtTransaction>>(
+                      {},
+                      (map, debt) {
+                        if (!map.containsKey(debt.personName)) {
+                          map[debt.personName] = debt;
+                        }
+                        return map;
+                      },
+                    )
+                    .values
+                    .toList();
 
                 if (uniqueDebts.isEmpty) {
                   return const Center(
@@ -120,7 +123,8 @@ class DebtContactsScreen extends StatelessWidget {
                     final debt = uniqueDebts[index];
                     return Card(
                       elevation: 3,
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
@@ -140,7 +144,8 @@ class DebtContactsScreen extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             ListTile(
-                              contentPadding: const EdgeInsets.only(left: 20, right: 20, top: 10),
+                              contentPadding: const EdgeInsets.only(
+                                  left: 20, right: 20, top: 10),
                               leading: CircleAvatar(
                                 radius: 25,
                                 backgroundColor: Colors.blue.shade100,
@@ -162,7 +167,8 @@ class DebtContactsScreen extends StatelessWidget {
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                              padding: const EdgeInsets.only(
+                                  left: 16, right: 16, bottom: 16),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
@@ -181,7 +187,8 @@ class DebtContactsScreen extends StatelessWidget {
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.green.shade400,
                                       foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(8),
                                       ),
@@ -207,7 +214,8 @@ class DebtContactsScreen extends StatelessWidget {
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.orange.shade400,
                                       foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(8),
                                       ),
@@ -224,14 +232,16 @@ class DebtContactsScreen extends StatelessWidget {
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: IconButton(
-                                      icon: const Icon(Icons.delete, color: Colors.red, size: 22),
+                                      icon: const Icon(Icons.delete,
+                                          color: Colors.red, size: 22),
                                       onPressed: () {
                                         showDialog(
                                           context: context,
                                           builder: (BuildContext context) {
                                             return AlertDialog(
                                               shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(15),
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
                                               ),
                                               title: const Text(
                                                 'Kontaktni o\'chirish',
@@ -242,15 +252,18 @@ class DebtContactsScreen extends StatelessWidget {
                                               ),
                                               content: Text(
                                                 '${debt.personName}ni o\'chirishni xohlaysizmi?',
-                                                style: const TextStyle(fontSize: 16),
+                                                style: const TextStyle(
+                                                    fontSize: 16),
                                               ),
                                               actions: [
                                                 TextButton(
-                                                  onPressed: () => Navigator.pop(context),
+                                                  onPressed: () =>
+                                                      Navigator.pop(context),
                                                   child: Text(
                                                     'Bekor qilish',
                                                     style: TextStyle(
-                                                      color: Colors.grey.shade600,
+                                                      color:
+                                                          Colors.grey.shade600,
                                                     ),
                                                   ),
                                                 ),
@@ -258,43 +271,64 @@ class DebtContactsScreen extends StatelessWidget {
                                                   onPressed: () async {
                                                     try {
                                                       // O'chirish borrowing va lend dan
-                                                      await FirebaseFirestore.instance
+                                                      await FirebaseFirestore
+                                                          .instance
                                                           .collection('debts')
                                                           .doc(currentUsername)
-                                                          .collection('borrowing')
+                                                          .collection(
+                                                              'borrowing')
                                                           .doc('debts')
                                                           .collection('items')
-                                                          .where('personName', isEqualTo: debt.personName)
+                                                          .where('personName',
+                                                              isEqualTo: debt
+                                                                  .personName)
                                                           .get()
                                                           .then((snapshot) {
-                                                        for (var doc in snapshot.docs) {
-                                                          doc.reference.delete();
+                                                        for (var doc
+                                                            in snapshot.docs) {
+                                                          doc.reference
+                                                              .delete();
                                                         }
                                                       });
 
-                                                      await FirebaseFirestore.instance
+                                                      await FirebaseFirestore
+                                                          .instance
                                                           .collection('debts')
                                                           .doc(currentUsername)
                                                           .collection('lend')
                                                           .doc('debts')
                                                           .collection('items')
-                                                          .where('personName', isEqualTo: debt.personName)
+                                                          .where('personName',
+                                                              isEqualTo: debt
+                                                                  .personName)
                                                           .get()
                                                           .then((snapshot) {
-                                                        for (var doc in snapshot.docs) {
-                                                          doc.reference.delete();
+                                                        for (var doc
+                                                            in snapshot.docs) {
+                                                          doc.reference
+                                                              .delete();
                                                         }
                                                       });
 
                                                       if (context.mounted) {
                                                         Navigator.pop(context);
-                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(
                                                           SnackBar(
-                                                            content: Text('${debt.personName} o\'chirildi'),
-                                                            backgroundColor: Colors.green,
-                                                            behavior: SnackBarBehavior.floating,
-                                                            shape: RoundedRectangleBorder(
-                                                              borderRadius: BorderRadius.circular(10),
+                                                            content: Text(
+                                                                '${debt.personName} o\'chirildi'),
+                                                            backgroundColor:
+                                                                Colors.green,
+                                                            behavior:
+                                                                SnackBarBehavior
+                                                                    .floating,
+                                                            shape:
+                                                                RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10),
                                                             ),
                                                           ),
                                                         );
@@ -302,27 +336,43 @@ class DebtContactsScreen extends StatelessWidget {
                                                     } catch (e) {
                                                       if (context.mounted) {
                                                         Navigator.pop(context);
-                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(
                                                           SnackBar(
-                                                            content: Text('Xatolik yuz berdi: $e'),
-                                                            backgroundColor: Colors.red,
-                                                            behavior: SnackBarBehavior.floating,
-                                                            shape: RoundedRectangleBorder(
-                                                              borderRadius: BorderRadius.circular(10),
+                                                            content: Text(
+                                                                'Xatolik yuz berdi: $e'),
+                                                            backgroundColor:
+                                                                Colors.red,
+                                                            behavior:
+                                                                SnackBarBehavior
+                                                                    .floating,
+                                                            shape:
+                                                                RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10),
                                                             ),
                                                           ),
                                                         );
                                                       }
                                                     }
                                                   },
-                                                  style: ElevatedButton.styleFrom(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
                                                     backgroundColor: Colors.red,
-                                                    foregroundColor: Colors.white,
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius: BorderRadius.circular(8),
+                                                    foregroundColor:
+                                                        Colors.white,
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8),
                                                     ),
                                                   ),
-                                                  child: const Text('O\'chirish'),
+                                                  child:
+                                                      const Text('O\'chirish'),
                                                 ),
                                               ],
                                             );
